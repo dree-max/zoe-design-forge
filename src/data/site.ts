@@ -1,3 +1,18 @@
+export interface NavItem {
+  label: string;
+  href: string;
+}
+
+export const navItems: NavItem[] = [
+  { label: "Home", href: "#hero" },
+  { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Portfolio", href: "#portfolio" },
+  { label: "Team", href: "#team" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "#contact" },
+];
+
 export interface Project {
   id: string;
   title: string;

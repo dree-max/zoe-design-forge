@@ -3,6 +3,7 @@
 import { brand } from "@/data/site";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { fadeUp } from "@/lib/motion";
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
@@ -16,13 +17,7 @@ export default function Contact() {
   return (
     <section id="contact" className="section-padding bg-transparent">
       <div className="container-site">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
+        <motion.div className="text-center mb-16" {...fadeUp}>
           <span className="section-label">Get in Touch</span>
           <h2 className="section-title">Let&apos;s Build Something Extraordinary</h2>
           <p className="section-subtitle mx-auto">
