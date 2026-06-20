@@ -19,6 +19,7 @@ export default function BlogPage() {
             title="Insights from the Studio"
             subtitle="Thoughts on architecture, design, and construction from the ZOE DESIGN FORGE team."
             className="mb-12"
+            headingLevel="h1"
           />
 
           {/* Categories */}
