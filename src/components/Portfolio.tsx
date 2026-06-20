@@ -3,6 +3,7 @@
 import { projects } from "@/data/site";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SectionHeader from "@/components/SectionHeader";
 
 const categories = ["All", "Residential", "Commercial", "Hospitality", "Furniture"];
 
@@ -17,13 +18,12 @@ export default function Portfolio() {
   return (
     <section id="portfolio" className="section-padding bg-transparent">
       <div className="container-site">
-        <div className="bg-white/90 backdrop-blur-sm text-center mb-12 p-12">
-          <span className="section-label">Our Portfolio</span>
-          <h2 className="section-title">Featured Projects</h2>
-          <p className="section-subtitle mx-auto">
-            Every project tells a story. Explore our work across East Africa.
-          </p>
-        </div>
+        <SectionHeader
+          label="Our Portfolio"
+          title="Featured Projects"
+          subtitle="Every project tells a story. Explore our work across East Africa."
+          className="mb-12"
+        />
 
         {/* Filters */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">

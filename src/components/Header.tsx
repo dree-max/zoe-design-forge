@@ -1,18 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { brand } from "@/data/site";
+import { brand, navItems } from "@/data/site";
 import Link from "next/link";
-
-const navItems = [
-  { label: "Home", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Team", href: "#team" },
-  { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "#contact" },
-];
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
