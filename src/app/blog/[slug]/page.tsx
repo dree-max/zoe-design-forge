@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { formatDate } from "@/lib/format";
 import { notFound } from "next/navigation";
 
 interface Props {
@@ -63,11 +64,7 @@ export default async function BlogPost({ params }: Props) {
                 {meta.category}
               </span>
               <span className="text-xs text-brand-default/60">
-                {new Date(meta.date).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
+                {formatDate(meta.date, "long")}
               </span>
             </div>
             <h1 className="text-3xl md:text-4xl font-heading font-bold text-brand-dark mb-4">

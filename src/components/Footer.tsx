@@ -1,5 +1,4 @@
-import { brand } from "@/data/site";
-import Link from "next/link";
+import { brand, navItems, services } from "@/data/site";
 
 export default function Footer() {
   return (
@@ -36,13 +35,13 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul className="space-y-3">
-              {["About", "Services", "Portfolio", "Team", "Blog", "Contact"].map((item) => (
-                <li key={item}>
+              {navItems.filter((item) => item.label !== "Home").map((item) => (
+                <li key={item.label}>
                   <a
-                    href={item === "Blog" ? "/blog" : `#${item.toLowerCase()}`}
+                    href={item.href}
                     className="hover:text-brand-orange transition-colors duration-300"
                   >
-                    {item}
+                    {item.label}
                   </a>
                 </li>
               ))}
@@ -55,20 +54,13 @@ export default function Footer() {
               Services
             </h4>
             <ul className="space-y-3">
-              {[
-                "Architectural Design",
-                "Interior Design",
-                "Master Planning",
-                "Landscape Design",
-                "Custom Furniture",
-                "Project Management",
-              ].map((service) => (
-                <li key={service}>
+              {services.map((service) => (
+                <li key={service.id}>
                   <a
                     href="#services"
                     className="hover:text-brand-orange transition-colors duration-300"
                   >
-                    {service}
+                    {service.title}
                   </a>
                 </li>
               ))}
