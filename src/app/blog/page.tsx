@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
-import Hero from "@/components/Hero";
+import { formatDate } from "@/lib/format";
+import SectionHeader from "@/components/SectionHeader";
 
 export default function BlogPage() {
   const posts = getAllPosts();
@@ -13,24 +14,24 @@ export default function BlogPage() {
 
       <section className="section-padding bg-transparent">
         <div className="container-site">
-          <div className="bg-white/90 backdrop-blur-sm text-center mb-12 p-12">
-            <span className="section-label">Our Blog</span>
-            <h1 className="section-title">Insights from the Studio</h1>
-            <p className="section-subtitle mx-auto">
-              Thoughts on architecture, design, and construction from the ZOE DESIGN FORGE team.
-            </p>
+          <SectionHeader
+            label="Our Blog"
+            title="Insights from the Studio"
+            subtitle="Thoughts on architecture, design, and construction from the ZOE DESIGN FORGE team."
+            className="mb-12"
+            headingLevel="h1"
+          />
 
-            {/* Categories */}
-            <div className="flex flex-wrap justify-center gap-3 mt-8">
-              {categories.map((cat) => (
-                <span
-                  key={cat}
-                  className="px-4 py-2 text-xs uppercase tracking-wider bg-brand-orange/10 text-brand-orange font-semibold"
-                >
-                  {cat}
-                </span>
-              ))}
-            </div>
+          {/* Categories */}
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
+            {categories.map((cat) => (
+              <span
+                key={cat}
+                className="px-4 py-2 text-xs uppercase tracking-wider bg-brand-orange/10 text-brand-orange font-semibold"
+              >
+                {cat}
+              </span>
+            ))}
           </div>
 
           {/* Posts Grid */}
@@ -54,11 +55,7 @@ export default function BlogPage() {
                         {post.category}
                       </span>
                       <span className="text-xs text-brand-default/60">
-                        {new Date(post.date).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                        {formatDate(post.date)}
                       </span>
                     </div>
                     <h2 className="text-lg font-heading font-bold text-brand-dark mb-2 group-hover:text-brand-orange transition-colors">

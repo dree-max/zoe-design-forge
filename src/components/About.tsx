@@ -2,20 +2,8 @@
 
 import { brand, services } from "@/data/site";
 import { motion } from "framer-motion";
-
-const fadeUp = {
-  initial: { opacity: 0, y: 40 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-50px" },
-  transition: { duration: 0.8, ease: "easeOut" as const },
-};
-
-const stagger = {
-  initial: { opacity: 0, y: 30 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-30px" },
-  transition: { duration: 0.6, ease: "easeOut" as const },
-};
+import { fadeUp, withStaggerDelay } from "@/lib/motion";
+import SectionHeader from "@/components/SectionHeader";
 
 export default function About() {
   return (
@@ -78,21 +66,18 @@ export default function About() {
       {/* Services Section */}
       <section id="services" className="section-padding bg-transparent">
         <div className="container-site">
-          <div className="bg-white/90 backdrop-blur-sm text-center mb-16 p-12">
-            <span className="section-label">Our Services</span>
-            <h2 className="section-title">What We Do</h2>
-            <p className="section-subtitle mx-auto">
-              Comprehensive architectural and engineering services from concept to completion.
-            </p>
-          </div>
+          <SectionHeader
+            label="Our Services"
+            title="What We Do"
+            subtitle="Comprehensive architectural and engineering services from concept to completion."
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
               <motion.div
                 key={service.id}
                 className="bg-white/90 backdrop-blur-sm p-8 group hover:shadow-xl transition-all duration-500 cursor-default"
-                {...stagger}
-                transition={{ ...stagger.transition, delay: index * 0.1 }}
+                {...withStaggerDelay(index)}
               >
                 <div className="w-14 h-14 bg-brand-orange/10 flex items-center justify-center mb-6 group-hover:bg-brand-orange transition-colors duration-500">
                   <i className={`bi ${service.icon} text-2xl text-brand-orange group-hover:text-white transition-colors duration-500`}></i>

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import fs from "fs";
 import path from "path";
 
@@ -13,7 +12,6 @@ export interface BlogPost {
   tags: string[];
 }
 
-// Simple frontmatter parser
 function parseFrontmatter(content: string) {
   const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!match) return { data: {}, content: "" };
@@ -34,47 +32,39 @@ function parseFrontmatter(content: string) {
   return { data: fm, content: match[2] };
 }
 
+function toBlogPost(slug: string, data: Record<string, string | string[]>): BlogPost {
+  return {
+    slug,
+    title: (data.title as string) || slug,
+    date: (data.date as string) || "",
+    author: (data.author as string) || "",
+    category: (data.category as string) || "",
+    excerpt: (data.excerpt as string) || "",
+    image: (data.image as string) || "/images/hero-bg.jpg",
+    tags: Array.isArray(data.tags) ? data.tags : [],
+  };
+}
+
+const POSTS_DIR = path.join(process.cwd(), "content/blog");
+
 export function getAllPosts(): BlogPost[] {
-  const postsDir = path.join(process.cwd(), "content/blog");
-  const files = fs.readdirSync(postsDir).filter((f) => f.endsWith(".md"));
+  const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"));
 
   const posts = files.map((file) => {
     const slug = file.replace(/\.md$/, "");
-    const raw = fs.readFileSync(path.join(postsDir, file), "utf-8");
+    const raw = fs.readFileSync(path.join(POSTS_DIR, file), "utf-8");
     const { data } = parseFrontmatter(raw);
-    return {
-      slug,
-      title: data.title as string || slug,
-      date: data.date as string || "",
-      author: data.author as string || "",
-      category: data.category as string || "",
-      excerpt: data.excerpt as string || "",
-      image: data.image as string || "/images/hero-bg.jpg",
-      tags: Array.isArray(data.tags) ? data.tags : [],
-    };
+    return toBlogPost(slug, data);
   });
 
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export function getPostBySlug(slug: string): { post: BlogPost; content: string } | null {
-  const postsDir = path.join(process.cwd(), "content/blog");
-  const filePath = path.join(postsDir, `${slug}.md`);
+  const filePath = path.join(POSTS_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
 
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = parseFrontmatter(raw);
-  return {
-    post: {
-      slug,
-      title: data.title as string || slug,
-      date: data.date as string || "",
-      author: data.author as string || "",
-      category: data.category as string || "",
-      excerpt: data.excerpt as string || "",
-      image: data.image as string || "/images/hero-bg.jpg",
-      tags: Array.isArray(data.tags) ? data.tags : [],
-    },
-    content,
-  };
+  return { post: toBlogPost(slug, data), content };
 }
