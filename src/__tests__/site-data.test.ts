@@ -1,12 +1,38 @@
 import {
   brand,
+  navItems,
   services,
   team,
   projects,
+  type NavItem,
   type Project,
   type Service,
   type TeamMember,
 } from "@/data/site";
+
+describe("navItems", () => {
+  it("uses real route paths instead of hash anchors", () => {
+    navItems.forEach((item: NavItem) => {
+      expect(item.href).not.toMatch(/^#/);
+      expect(item.href).toMatch(/^\//);
+    });
+  });
+
+  it("maps to the expected routes", () => {
+    const mapping = Object.fromEntries(navItems.map((n) => [n.label, n.href]));
+    expect(mapping["Home"]).toBe("/");
+    expect(mapping["About"]).toBe("/about");
+    expect(mapping["Services"]).toBe("/services");
+    expect(mapping["Portfolio"]).toBe("/projects");
+    expect(mapping["Blog"]).toBe("/blog");
+    expect(mapping["Contact"]).toBe("/contact");
+  });
+
+  it("does not include Team in the navigation", () => {
+    const labels = navItems.map((n) => n.label);
+    expect(labels).not.toContain("Team");
+  });
+});
 
 describe("brand", () => {
   it("has required contact fields", () => {

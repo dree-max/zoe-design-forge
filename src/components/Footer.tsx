@@ -1,4 +1,5 @@
 import { brand, navItems, services } from "@/data/site";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -37,12 +38,12 @@ export default function Footer() {
             <ul className="space-y-3">
               {navItems.filter((item) => item.label !== "Home").map((item) => (
                 <li key={item.label}>
-                  <a
+                  <Link
                     href={item.href}
                     className="hover:text-brand-orange transition-colors duration-300"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -56,12 +57,12 @@ export default function Footer() {
             <ul className="space-y-3">
               {services.map((service) => (
                 <li key={service.id}>
-                  <a
-                    href="#services"
+                  <Link
+                    href="/services"
                     className="hover:text-brand-orange transition-colors duration-300"
                   >
                     {service.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

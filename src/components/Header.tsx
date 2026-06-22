@@ -23,7 +23,7 @@ export default function Header() {
     >
       <div className="container-site flex items-center justify-between px-6">
         {/* Logo */}
-        <Link href="#hero" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <img
             src={scrolled ? "/icon-black.png" : "/icon-white.png"}
             alt="Zoe Designs Icon"
@@ -41,7 +41,7 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className={`nav-link px-4 py-2 ${
@@ -49,14 +49,14 @@ export default function Header() {
               }`}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="ml-4 bg-brand-orange text-white px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-brand-orange-hover transition-colors"
           >
             Start a Project
-          </a>
+          </Link>
         </nav>
 
         {/* Mobile Toggle */}
@@ -81,14 +81,14 @@ export default function Header() {
       >
         <nav className="flex flex-col items-center justify-center h-full gap-6">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="text-white text-2xl uppercase tracking-wider hover:text-brand-orange transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
       </div>

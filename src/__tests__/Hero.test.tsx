@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import Hero from "@/components/Hero";
 
+jest.mock("next/link", () => {
+  return function MockLink({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) {
+    return <a href={href} {...props}>{children}</a>;
+  };
+});
+
 jest.mock("framer-motion", () => ({
   motion: {
     img: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => {
@@ -40,18 +46,18 @@ describe("Hero", () => {
     expect(screen.getByText(/Crafting exceptional spaces/)).toBeInTheDocument();
   });
 
-  it("renders View Our Work button", () => {
+  it("renders View Our Work button linking to /projects", () => {
     render(<Hero />);
     const viewBtn = screen.getByText("View Our Work");
     expect(viewBtn).toBeInTheDocument();
-    expect(viewBtn).toHaveAttribute("href", "#portfolio");
+    expect(viewBtn.closest("a")).toHaveAttribute("href", "/projects");
   });
 
-  it("renders Start a Project button", () => {
+  it("renders Start a Project button linking to /contact", () => {
     render(<Hero />);
     const startBtn = screen.getByText("Start a Project");
     expect(startBtn).toBeInTheDocument();
-    expect(startBtn).toHaveAttribute("href", "#contact");
+    expect(startBtn.closest("a")).toHaveAttribute("href", "/contact");
   });
 
   it("renders WhatsApp floating button", () => {
