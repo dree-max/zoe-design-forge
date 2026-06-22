@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, getImageUrl } from "@/lib/blog";
 import { formatDate } from "@/lib/format";
 import SectionHeader from "@/components/SectionHeader";
 
-export default function BlogPage() {
-  const posts = getAllPosts();
+export const revalidate = 60;
 
-  const categories = [...new Set(posts.map((p) => p.category))];
+export default async function BlogPage() {
+  const posts = await getAllPosts();
+
+  const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
 
   return (
     <>
@@ -36,7 +38,7 @@ export default function BlogPage() {
 
           {/* Posts Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post, index) => (
+            {posts.map((post) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
@@ -46,7 +48,7 @@ export default function BlogPage() {
                   <div className="aspect-[16/9] bg-brand-gray-bg flex items-center justify-center overflow-hidden">
                     <div
                       className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                      style={{ backgroundImage: `url(${post.image})` }}
+                      style={{ backgroundImage: `url(${getImageUrl(post.image)})` }}
                     />
                   </div>
                   <div className="p-6">
@@ -72,6 +74,15 @@ export default function BlogPage() {
               </Link>
             ))}
           </div>
+
+          {posts.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-brand-default/60 text-lg">No blog posts yet. Add posts in the Sanity Studio.</p>
+              <Link href="/studio" className="btn-primary mt-4 inline-block">
+                Open Studio
+              </Link>
+            </div>
+          )}
         </div>
       </section>
     </>
