@@ -10,6 +10,9 @@ const config = {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
+  transformIgnorePatterns: [
+    "node_modules/(?!(next-sanity|@sanity/client|@sanity/image-url)/)",
+  ],
 };
 
 module.exports = createJestConfig(config);

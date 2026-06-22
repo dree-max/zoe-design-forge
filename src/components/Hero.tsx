@@ -2,7 +2,7 @@
 
 import { brand } from "@/data/site";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -49,12 +49,12 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
         >
-          <a href="#portfolio" className="btn-primary">
+          <Link href="/projects" className="btn-primary">
             View Our Work
-          </a>
-          <a href="#contact" className="btn-secondary">
+          </Link>
+          <Link href="/contact" className="btn-secondary">
             Start a Project
-          </a>
+          </Link>
         </motion.div>
 
         {/* WhatsApp Floating */}

@@ -1,204 +1,134 @@
-import fs from "fs";
-import path from "path";
-import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, getPostSlugs, getImageUrl } from "@/lib/blog";
+import type { BlogPost, BlogPostWithBody, SanityImage } from "@/lib/blog";
 
-jest.mock("fs");
-jest.mock("path");
+const mockFetch = jest.fn();
 
-const mockedFs = jest.mocked(fs);
-const mockedPath = jest.mocked(path);
+jest.mock("next-sanity", () => ({
+  groq: (strings: TemplateStringsArray, ...values: unknown[]) =>
+    String.raw({ raw: strings }, ...values),
+  PortableText: () => null,
+}));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mockReaddirSync = mockedFs.readdirSync as jest.Mock<any>;
+jest.mock("@/sanity/env", () => ({
+  isSanityConfigured: true,
+  projectId: "test-project",
+  dataset: "production",
+  apiVersion: "2024-01-01",
+}));
 
-const sampleMarkdown = `---
-title: "Test Post Title"
-date: "2026-06-01"
-author: "Jane Doe"
-category: "Architecture"
-excerpt: "A short excerpt about architecture."
-image: "/images/test.jpg"
-tags: ["design", "modern"]
----
+jest.mock("@/sanity/lib/client", () => ({
+  client: { fetch: (...args: unknown[]) => mockFetch(...args) },
+}));
 
-## Introduction
-
-This is the body of the blog post.
-
-### Section One
-
-Some content here with **bold text**.
-`;
-
-const sampleMarkdownMinimal = `---
-title: "Minimal Post"
-date: "2026-01-15"
-author: "John Smith"
-category: "Interior Design"
-excerpt: "Minimal excerpt."
-image: "/images/minimal.jpg"
-tags: []
----
-
-Short body.
-`;
-
-const sampleMarkdownNoFrontmatter = `Just some plain text without frontmatter.`;
-
-const sampleMarkdownEmptyTags = `---
-title: "No Tags Post"
-date: "2026-03-10"
-author: "Alice"
-category: "Landscape"
-excerpt: "No tags here."
-image: "/images/no-tags.jpg"
----
-
-Content without tags field.
-`;
-
-const sampleMarkdownWithColonInValue = `---
-title: "Post With Colon: A Special Case"
-date: "2026-05-20"
-author: "Bob"
-category: "Design"
-excerpt: "Testing colons: they should work."
-image: "/images/colon.jpg"
-tags: ["test"]
----
-
-Body text.
-`;
+jest.mock("@/sanity/lib/image", () => ({
+  urlFor: (source: SanityImage) => ({
+    width: () => ({
+      height: () => ({
+        url: () => `https://cdn.sanity.io/images/test/${source.asset._ref}`,
+      }),
+    }),
+  }),
+}));
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockedPath.join.mockImplementation((...args: string[]) => args.join("/"));
 });
 
-describe("getAllPosts", () => {
-  it("returns posts sorted by date (newest first)", () => {
-    mockReaddirSync.mockReturnValue([
-      "old-post.md",
-      "new-post.md",
-    ]);
-    mockedFs.readFileSync.mockImplementation((filePath: fs.PathOrFileDescriptor) => {
-      const p = String(filePath);
-      if (p.includes("old-post.md")) return sampleMarkdownMinimal;
-      if (p.includes("new-post.md")) return sampleMarkdown;
-      return "";
-    });
+const samplePost: BlogPost = {
+  _id: "post-1",
+  slug: "test-post",
+  title: "Test Post Title",
+  date: "2026-06-01T00:00:00Z",
+  author: "Jane Doe",
+  category: "Architecture",
+  excerpt: "A short excerpt about architecture.",
+  image: { asset: { _ref: "image-abc-300x200-jpg" } },
+  tags: ["design", "modern"],
+};
 
-    const posts = getAllPosts();
+const samplePost2: BlogPost = {
+  _id: "post-2",
+  slug: "minimal-post",
+  title: "Minimal Post",
+  date: "2026-01-15T00:00:00Z",
+  author: "John Smith",
+  category: "Interior Design",
+  excerpt: "Minimal excerpt.",
+  image: null,
+  tags: [],
+};
+
+const samplePostWithBody: BlogPostWithBody = {
+  ...samplePost,
+  body: [
+    {
+      _type: "block",
+      _key: "block-1",
+      children: [{ _type: "span", _key: "span-1", text: "Introduction paragraph.", marks: [] }],
+      markDefs: [],
+      style: "normal",
+    },
+  ],
+};
+
+describe("getAllPosts", () => {
+  it("returns posts from Sanity", async () => {
+    mockFetch.mockResolvedValue([samplePost, samplePost2]);
+
+    const posts = await getAllPosts();
 
     expect(posts).toHaveLength(2);
     expect(posts[0].title).toBe("Test Post Title");
-    expect(posts[0].date).toBe("2026-06-01");
+    expect(posts[0].slug).toBe("test-post");
     expect(posts[1].title).toBe("Minimal Post");
-    expect(posts[1].date).toBe("2026-01-15");
   });
 
-  it("filters out non-.md files", () => {
-    mockReaddirSync.mockReturnValue([
-      "post.md",
-      "index.json",
-      "readme.txt",
-    ]);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdown);
+  it("returns empty array when no posts exist", async () => {
+    mockFetch.mockResolvedValue([]);
 
-    const posts = getAllPosts();
-    expect(posts).toHaveLength(1);
-  });
-
-  it("returns empty array when no posts exist", () => {
-    mockReaddirSync.mockReturnValue([]);
-
-    const posts = getAllPosts();
+    const posts = await getAllPosts();
     expect(posts).toHaveLength(0);
   });
 
-  it("uses slug as fallback title when title is missing from frontmatter", () => {
-    mockReaddirSync.mockReturnValue([
-      "no-frontmatter.md",
-    ]);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdownNoFrontmatter);
+  it("uses the published posts query by default (scheduled publishing)", async () => {
+    mockFetch.mockResolvedValue([samplePost]);
 
-    const posts = getAllPosts();
-    expect(posts).toHaveLength(1);
-    expect(posts[0].title).toBe("no-frontmatter");
-    expect(posts[0].slug).toBe("no-frontmatter");
+    await getAllPosts();
+
+    const query = mockFetch.mock.calls[0][0] as string;
+    expect(query).toContain("date <= now()");
   });
 
-  it("handles posts without tags field", () => {
-    mockReaddirSync.mockReturnValue([
-      "no-tags.md",
-    ]);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdownEmptyTags);
+  it("uses the all posts query when includeScheduled is true", async () => {
+    mockFetch.mockResolvedValue([samplePost]);
 
-    const posts = getAllPosts();
-    expect(posts).toHaveLength(1);
+    await getAllPosts({ includeScheduled: true });
+
+    const query = mockFetch.mock.calls[0][0] as string;
+    expect(query).not.toContain("date <= now()");
+  });
+
+  it("defaults empty author and category to empty string", async () => {
+    mockFetch.mockResolvedValue([{ ...samplePost, author: null, category: null }]);
+
+    const posts = await getAllPosts();
+    expect(posts[0].author).toBe("");
+    expect(posts[0].category).toBe("");
+  });
+
+  it("defaults null tags to empty array", async () => {
+    mockFetch.mockResolvedValue([{ ...samplePost, tags: null }]);
+
+    const posts = await getAllPosts();
     expect(posts[0].tags).toEqual([]);
-  });
-
-  it("handles colons in frontmatter values", () => {
-    mockReaddirSync.mockReturnValue([
-      "colon-post.md",
-    ]);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdownWithColonInValue);
-
-    const posts = getAllPosts();
-    expect(posts).toHaveLength(1);
-    expect(posts[0].title).toBe("Post With Colon: A Special Case");
-  });
-
-  it("strips quotes from frontmatter values", () => {
-    mockReaddirSync.mockReturnValue([
-      "post.md",
-    ]);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdown);
-
-    const posts = getAllPosts();
-    expect(posts[0].author).toBe("Jane Doe");
-    expect(posts[0].category).toBe("Architecture");
-  });
-
-  it("parses tags array from frontmatter", () => {
-    mockReaddirSync.mockReturnValue([
-      "post.md",
-    ]);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdown);
-
-    const posts = getAllPosts();
-    expect(posts[0].tags).toEqual(["design", "modern"]);
-  });
-
-  it("uses default image when image is missing", () => {
-    const noImageMarkdown = `---
-title: "No Image"
-date: "2026-02-01"
-author: "Test"
-category: "Test"
-excerpt: "No image"
-tags: []
----
-
-Body.
-`;
-    mockReaddirSync.mockReturnValue([
-      "no-image.md",
-    ]);
-    mockedFs.readFileSync.mockReturnValue(noImageMarkdown);
-
-    const posts = getAllPosts();
-    expect(posts[0].image).toBe("/images/hero-bg.jpg");
   });
 });
 
 describe("getPostBySlug", () => {
-  it("returns post data and content for an existing slug", () => {
-    mockedFs.existsSync.mockReturnValue(true);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdown);
+  it("returns post data with body for an existing slug", async () => {
+    mockFetch.mockResolvedValue(samplePostWithBody);
 
-    const result = getPostBySlug("test-post");
+    const result = await getPostBySlug("test-post");
 
     expect(result).not.toBeNull();
     expect(result!.post.title).toBe("Test Post Title");
@@ -206,32 +136,77 @@ describe("getPostBySlug", () => {
     expect(result!.post.author).toBe("Jane Doe");
     expect(result!.post.category).toBe("Architecture");
     expect(result!.post.tags).toEqual(["design", "modern"]);
-    expect(result!.content).toContain("## Introduction");
-    expect(result!.content).toContain("This is the body of the blog post.");
+    expect(result!.post.body).toHaveLength(1);
   });
 
-  it("returns null for a non-existent slug", () => {
-    mockedFs.existsSync.mockReturnValue(false);
+  it("returns null for a non-existent slug", async () => {
+    mockFetch.mockResolvedValue(null);
 
-    const result = getPostBySlug("non-existent");
+    const result = await getPostBySlug("non-existent");
     expect(result).toBeNull();
   });
 
-  it("returns content body separated from frontmatter", () => {
-    mockedFs.existsSync.mockReturnValue(true);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdown);
+  it("uses published query by default (enforces scheduled publishing)", async () => {
+    mockFetch.mockResolvedValue(samplePostWithBody);
 
-    const result = getPostBySlug("test-post");
-    expect(result!.content).not.toContain("---");
-    expect(result!.content).toContain("Section One");
+    await getPostBySlug("test-post");
+
+    const query = mockFetch.mock.calls[0][0] as string;
+    expect(query).toContain("date <= now()");
   });
 
-  it("handles post with colon in title", () => {
-    mockedFs.existsSync.mockReturnValue(true);
-    mockedFs.readFileSync.mockReturnValue(sampleMarkdownWithColonInValue);
+  it("uses unfiltered query when includeScheduled is true", async () => {
+    mockFetch.mockResolvedValue(samplePostWithBody);
 
-    const result = getPostBySlug("colon-post");
-    expect(result!.post.title).toBe("Post With Colon: A Special Case");
-    expect(result!.post.excerpt).toBe("Testing colons: they should work.");
+    await getPostBySlug("test-post", { includeScheduled: true });
+
+    const query = mockFetch.mock.calls[0][0] as string;
+    expect(query).not.toContain("date <= now()");
+  });
+
+  it("passes slug as query parameter", async () => {
+    mockFetch.mockResolvedValue(samplePostWithBody);
+
+    await getPostBySlug("test-post");
+
+    expect(mockFetch.mock.calls[0][1]).toEqual({ slug: "test-post" });
+  });
+
+  it("defaults empty author and category to empty string", async () => {
+    mockFetch.mockResolvedValue({ ...samplePostWithBody, author: null, category: null });
+
+    const result = await getPostBySlug("test-post");
+    expect(result!.post.author).toBe("");
+    expect(result!.post.category).toBe("");
+  });
+});
+
+describe("getPostSlugs", () => {
+  it("returns an array of slug strings", async () => {
+    mockFetch.mockResolvedValue(["post-1", "post-2", "post-3"]);
+
+    const slugs = await getPostSlugs();
+    expect(slugs).toEqual(["post-1", "post-2", "post-3"]);
+  });
+
+  it("returns empty array when no posts exist", async () => {
+    mockFetch.mockResolvedValue([]);
+
+    const slugs = await getPostSlugs();
+    expect(slugs).toEqual([]);
+  });
+});
+
+describe("getImageUrl", () => {
+  it("returns Sanity CDN URL for a valid image", () => {
+    const image: SanityImage = { asset: { _ref: "image-abc-300x200-jpg" } };
+    const url = getImageUrl(image);
+    expect(url).toContain("cdn.sanity.io");
+    expect(url).toContain("image-abc-300x200-jpg");
+  });
+
+  it("returns fallback URL when image is null", () => {
+    const url = getImageUrl(null);
+    expect(url).toBe("/images/hero-bg.jpg");
   });
 });

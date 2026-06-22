@@ -13,15 +13,30 @@ describe("Footer", () => {
     expect(screen.getAllByText(/ZOE DESIGN FORGE/).length).toBeGreaterThan(0);
   });
 
-  it("renders quick links section", () => {
+  it("renders quick links section with route hrefs", () => {
     render(<Footer />);
     expect(screen.getByText("Quick Links")).toBeInTheDocument();
-    expect(screen.getAllByText("About").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Services").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Portfolio").length).toBeGreaterThan(0);
+
+    const aboutLinks = screen.getAllByText("About");
+    const quickAbout = aboutLinks.find((el) =>
+      el.closest("a")?.getAttribute("href") === "/about"
+    );
+    expect(quickAbout).toBeTruthy();
+
+    const servicesLinks = screen.getAllByText("Services");
+    const quickServices = servicesLinks.find((el) =>
+      el.closest("a")?.getAttribute("href") === "/services"
+    );
+    expect(quickServices).toBeTruthy();
+
+    const portfolioLinks = screen.getAllByText("Portfolio");
+    const quickPortfolio = portfolioLinks.find((el) =>
+      el.closest("a")?.getAttribute("href") === "/projects"
+    );
+    expect(quickPortfolio).toBeTruthy();
   });
 
-  it("renders services list", () => {
+  it("renders services list linking to /services", () => {
     render(<Footer />);
     expect(screen.getByText("Architectural Design")).toBeInTheDocument();
     expect(screen.getByText("Interior Design")).toBeInTheDocument();
@@ -29,6 +44,9 @@ describe("Footer", () => {
     expect(screen.getByText("Landscape Design")).toBeInTheDocument();
     expect(screen.getByText("Custom Furniture")).toBeInTheDocument();
     expect(screen.getByText("Project Management")).toBeInTheDocument();
+
+    const archLink = screen.getByText("Architectural Design").closest("a");
+    expect(archLink).toHaveAttribute("href", "/services");
   });
 
   it("renders contact information", () => {
