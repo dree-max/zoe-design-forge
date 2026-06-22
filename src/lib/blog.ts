@@ -47,7 +47,7 @@ function toBlogPost(slug: string, data: Record<string, string | string[]>): Blog
 
 const POSTS_DIR = path.join(process.cwd(), "content/blog");
 
-export function getAllPosts(): BlogPost[] {
+export function getAllPosts({ includeScheduled = false } = {}): BlogPost[] {
   const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"));
 
   const posts = files.map((file) => {
@@ -57,7 +57,12 @@ export function getAllPosts(): BlogPost[] {
     return toBlogPost(slug, data);
   });
 
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const sorted = posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  if (includeScheduled) return sorted;
+
+  const now = new Date();
+  return sorted.filter((post) => !post.date || new Date(post.date) <= now);
 }
 
 export function getPostBySlug(slug: string): { post: BlogPost; content: string } | null {

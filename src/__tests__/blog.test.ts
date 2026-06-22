@@ -191,6 +191,68 @@ Body.
     const posts = getAllPosts();
     expect(posts[0].image).toBe("/images/hero-bg.jpg");
   });
+
+  it("hides future-dated posts by default (scheduled publishing)", () => {
+    const futureDate = new Date();
+    futureDate.setFullYear(futureDate.getFullYear() + 1);
+    const futureMarkdown = `---
+title: "Future Post"
+date: "${futureDate.toISOString().split("T")[0]}"
+author: "Test"
+category: "Test"
+excerpt: "Scheduled"
+image: "/images/test.jpg"
+tags: []
+---
+
+Future body.
+`;
+    mockReaddirSync.mockReturnValue([
+      "future-post.md",
+      "old-post.md",
+    ]);
+    mockedFs.readFileSync.mockImplementation((filePath: fs.PathOrFileDescriptor) => {
+      const p = String(filePath);
+      if (p.includes("future-post.md")) return futureMarkdown;
+      if (p.includes("old-post.md")) return sampleMarkdownMinimal;
+      return "";
+    });
+
+    const posts = getAllPosts();
+    expect(posts).toHaveLength(1);
+    expect(posts[0].title).toBe("Minimal Post");
+  });
+
+  it("includes future-dated posts when includeScheduled is true", () => {
+    const futureDate = new Date();
+    futureDate.setFullYear(futureDate.getFullYear() + 1);
+    const futureMarkdown = `---
+title: "Future Post"
+date: "${futureDate.toISOString().split("T")[0]}"
+author: "Test"
+category: "Test"
+excerpt: "Scheduled"
+image: "/images/test.jpg"
+tags: []
+---
+
+Future body.
+`;
+    mockReaddirSync.mockReturnValue([
+      "future-post.md",
+      "old-post.md",
+    ]);
+    mockedFs.readFileSync.mockImplementation((filePath: fs.PathOrFileDescriptor) => {
+      const p = String(filePath);
+      if (p.includes("future-post.md")) return futureMarkdown;
+      if (p.includes("old-post.md")) return sampleMarkdownMinimal;
+      return "";
+    });
+
+    const posts = getAllPosts({ includeScheduled: true });
+    expect(posts).toHaveLength(2);
+    expect(posts[0].title).toBe("Future Post");
+  });
 });
 
 describe("getPostBySlug", () => {

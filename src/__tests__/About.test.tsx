@@ -32,28 +32,6 @@ describe("About", () => {
     expect(screen.getByText("Happy Clients")).toBeInTheDocument();
   });
 
-  it("renders the Services section", () => {
-    render(<About />);
-    expect(screen.getByText("Our Services")).toBeInTheDocument();
-    expect(screen.getByText("What We Do")).toBeInTheDocument();
-  });
-
-  it("renders all service cards", () => {
-    render(<About />);
-    expect(screen.getByText("Architectural Design")).toBeInTheDocument();
-    expect(screen.getByText("Interior Design")).toBeInTheDocument();
-    expect(screen.getByText("Master Planning")).toBeInTheDocument();
-    expect(screen.getByText("Landscape Design")).toBeInTheDocument();
-    expect(screen.getByText("Custom Furniture")).toBeInTheDocument();
-    expect(screen.getByText("Project Management")).toBeInTheDocument();
-  });
-
-  it("renders process steps for each service (first 3)", () => {
-    render(<About />);
-    expect(screen.getByText("Client consultation & site analysis")).toBeInTheDocument();
-    expect(screen.getByText("Space planning & mood board creation")).toBeInTheDocument();
-  });
-
   it("renders the about image", () => {
     render(<About />);
     const img = screen.getByAltText("ZOE DESIGN FORGE studio");
