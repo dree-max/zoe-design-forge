@@ -296,4 +296,49 @@ describe("getPostBySlug", () => {
     expect(result!.post.title).toBe("Post With Colon: A Special Case");
     expect(result!.post.excerpt).toBe("Testing colons: they should work.");
   });
+
+  it("returns null for future-dated posts by default (scheduled publishing)", () => {
+    const futureDate = new Date();
+    futureDate.setFullYear(futureDate.getFullYear() + 1);
+    const futureMarkdown = `---
+title: "Future Post"
+date: "${futureDate.toISOString().split("T")[0]}"
+author: "Test"
+category: "Test"
+excerpt: "Scheduled"
+image: "/images/test.jpg"
+tags: []
+---
+
+Future body.
+`;
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readFileSync.mockReturnValue(futureMarkdown);
+
+    const result = getPostBySlug("future-post");
+    expect(result).toBeNull();
+  });
+
+  it("returns future-dated posts when includeScheduled is true", () => {
+    const futureDate = new Date();
+    futureDate.setFullYear(futureDate.getFullYear() + 1);
+    const futureMarkdown = `---
+title: "Future Post"
+date: "${futureDate.toISOString().split("T")[0]}"
+author: "Test"
+category: "Test"
+excerpt: "Scheduled"
+image: "/images/test.jpg"
+tags: []
+---
+
+Future body.
+`;
+    mockedFs.existsSync.mockReturnValue(true);
+    mockedFs.readFileSync.mockReturnValue(futureMarkdown);
+
+    const result = getPostBySlug("future-post", { includeScheduled: true });
+    expect(result).not.toBeNull();
+    expect(result!.post.title).toBe("Future Post");
+  });
 });
