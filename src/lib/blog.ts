@@ -65,11 +65,17 @@ export function getAllPosts({ includeScheduled = false } = {}): BlogPost[] {
   return sorted.filter((post) => !post.date || new Date(post.date) <= now);
 }
 
-export function getPostBySlug(slug: string): { post: BlogPost; content: string } | null {
+export function getPostBySlug(slug: string, { includeScheduled = false } = {}): { post: BlogPost; content: string } | null {
   const filePath = path.join(POSTS_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
 
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = parseFrontmatter(raw);
-  return { post: toBlogPost(slug, data), content };
+  const post = toBlogPost(slug, data);
+
+  if (!includeScheduled && post.date && new Date(post.date) > new Date()) {
+    return null;
+  }
+
+  return { post, content };
 }
