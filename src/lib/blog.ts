@@ -1,81 +1,74 @@
-import fs from "fs";
-import path from "path";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
+import { isSanityConfigured } from "@/sanity/env";
+import {
+  postsQuery,
+  allPostsIncludingScheduledQuery,
+  postBySlugQuery,
+  postBySlugIncludingScheduledQuery,
+  postSlugsQuery,
+} from "@/sanity/lib/queries";
+import type { PortableTextBlock } from "next-sanity";
+
+export interface SanityImage {
+  asset: { _ref: string };
+  hotspot?: { x: number; y: number; height: number; width: number };
+}
 
 export interface BlogPost {
+  _id: string;
   slug: string;
   title: string;
   date: string;
   author: string;
   category: string;
   excerpt: string;
-  image: string;
+  image: SanityImage | null;
   tags: string[];
 }
 
-function parseFrontmatter(content: string) {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) return { data: {}, content: "" };
-
-  const fm: Record<string, string | string[]> = {};
-  match[1].split("\n").forEach((line) => {
-    const [key, ...vals] = line.split(":");
-    if (key && vals.length) {
-      const val = vals.join(":").trim();
-      if (val.startsWith("[") && val.endsWith("]")) {
-        fm[key.trim()] = val.slice(1, -1).split(",").map((t) => t.trim().replace(/^"|"$/g, ""));
-      } else {
-        fm[key.trim()] = val.replace(/^"|"$/g, "");
-      }
-    }
-  });
-
-  return { data: fm, content: match[2] };
+export interface BlogPostWithBody extends BlogPost {
+  body: PortableTextBlock[];
 }
 
-function toBlogPost(slug: string, data: Record<string, string | string[]>): BlogPost {
+export function getImageUrl(image: SanityImage | null): string {
+  if (!image) return "/images/hero-bg.jpg";
+  return urlFor(image).width(800).height(450).url();
+}
+
+export async function getAllPosts({ includeScheduled = false } = {}): Promise<BlogPost[]> {
+  if (!isSanityConfigured) return [];
+
+  const query = includeScheduled ? allPostsIncludingScheduledQuery : postsQuery;
+  const posts = await client.fetch<BlogPost[]>(query);
+  return posts.map((post) => ({
+    ...post,
+    author: post.author || "",
+    category: post.category || "",
+    tags: post.tags || [],
+  }));
+}
+
+export async function getPostBySlug(
+  slug: string,
+  { includeScheduled = false } = {},
+): Promise<{ post: BlogPostWithBody } | null> {
+  if (!isSanityConfigured) return null;
+
+  const query = includeScheduled ? postBySlugIncludingScheduledQuery : postBySlugQuery;
+  const post = await client.fetch<BlogPostWithBody | null>(query, { slug });
+  if (!post) return null;
   return {
-    slug,
-    title: (data.title as string) || slug,
-    date: (data.date as string) || "",
-    author: (data.author as string) || "",
-    category: (data.category as string) || "",
-    excerpt: (data.excerpt as string) || "",
-    image: (data.image as string) || "/images/hero-bg.jpg",
-    tags: Array.isArray(data.tags) ? data.tags : [],
+    post: {
+      ...post,
+      author: post.author || "",
+      category: post.category || "",
+      tags: post.tags || [],
+    },
   };
 }
 
-const POSTS_DIR = path.join(process.cwd(), "content/blog");
-
-export function getAllPosts({ includeScheduled = false } = {}): BlogPost[] {
-  const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"));
-
-  const posts = files.map((file) => {
-    const slug = file.replace(/\.md$/, "");
-    const raw = fs.readFileSync(path.join(POSTS_DIR, file), "utf-8");
-    const { data } = parseFrontmatter(raw);
-    return toBlogPost(slug, data);
-  });
-
-  const sorted = posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-  if (includeScheduled) return sorted;
-
-  const now = new Date();
-  return sorted.filter((post) => !post.date || new Date(post.date) <= now);
-}
-
-export function getPostBySlug(slug: string, { includeScheduled = false } = {}): { post: BlogPost; content: string } | null {
-  const filePath = path.join(POSTS_DIR, `${slug}.md`);
-  if (!fs.existsSync(filePath)) return null;
-
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = parseFrontmatter(raw);
-  const post = toBlogPost(slug, data);
-
-  if (!includeScheduled && post.date && new Date(post.date) > new Date()) {
-    return null;
-  }
-
-  return { post, content };
+export async function getPostSlugs(): Promise<string[]> {
+  if (!isSanityConfigured) return [];
+  return client.fetch<string[]>(postSlugsQuery);
 }
