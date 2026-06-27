@@ -3,6 +3,7 @@
 import { projects } from "@/data/site";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import SectionHeader from "@/components/SectionHeader";
 
 const categories = ["All", "Residential", "Commercial", "Hospitality", "Furniture"];
@@ -60,20 +61,19 @@ export default function Portfolio() {
                 )}
               >
                 <div className="relative overflow-hidden mb-4 aspect-[4/3] bg-brand-gray-bg">
-                  <div className="w-full h-full flex items-center justify-center text-brand-default/30">
-                    <div className="text-center p-4">
-                      <i className="bi bi-image text-4xl block mb-2"></i>
-                      <span className="text-sm">{project.title}</span>
-                    </div>
-                  </div>
-                  {/* Hover overlay */}
+                  <Image
+                    src={project.images[0].src}
+                    alt={project.images[0].label}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
                   <div className="absolute inset-0 bg-brand-dark/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="text-center text-white">
+                    <div className="text-center text-white px-4">
                       <i className="bi bi-arrows-angle-expand text-3xl mb-2 block"></i>
                       <span className="text-sm uppercase tracking-wider">View Project</span>
                     </div>
                   </div>
-                  {/* Category badge */}
                   <span className="absolute top-4 left-4 bg-brand-orange text-white text-xs px-3 py-1 uppercase tracking-wider">
                     {project.category}
                   </span>
@@ -88,6 +88,12 @@ export default function Portfolio() {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {filtered.length === 0 && (
+          <p className="text-center text-brand-default py-12">
+            No projects in this category yet. Check back soon.
+          </p>
+        )}
 
         {/* Expanded Project Detail */}
         <AnimatePresence>
@@ -131,11 +137,22 @@ export default function Portfolio() {
                           <span className="font-semibold text-brand-dark">Scope:</span> {project.scope}
                         </p>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        {project.images.map((img, i) => (
-                          <div key={i} className="aspect-square bg-brand-gray-bg flex items-center justify-center text-brand-default/30">
-                            <i className="bi bi-image text-2xl"></i>
-                          </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {project.images.map((image) => (
+                          <figure key={image.src} className="flex flex-col">
+                            <div className="relative aspect-[4/3] overflow-hidden bg-brand-gray-bg">
+                              <Image
+                                src={image.src}
+                                alt={image.label}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 1024px) 100vw, 25vw"
+                              />
+                            </div>
+                            <figcaption className="mt-2 text-xs text-brand-default text-center">
+                              {image.label}
+                            </figcaption>
+                          </figure>
                         ))}
                       </div>
                     </div>

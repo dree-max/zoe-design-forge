@@ -5,7 +5,7 @@ import { projects } from "@/data/site";
 
 const sceneImages = [
   "/images/hero-bg.jpg",
-  ...projects.map((p) => p.images[0]),
+  ...projects.map((p) => p.images[0].src),
 ];
 
 // Get an image or fallback to a solid color gradient

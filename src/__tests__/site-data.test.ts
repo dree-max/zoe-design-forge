@@ -137,8 +137,9 @@ describe("projects", () => {
   it("project images have valid paths", () => {
     projects.forEach((project) => {
       project.images.forEach((img) => {
-        expect(img).toMatch(/^\/images\//);
-        expect(img).toMatch(/\.(jpg|jpeg|png|webp)$/);
+        expect(img.src).toMatch(/^\/images\//);
+        expect(img.src).toMatch(/\.(jpg|jpeg|png|webp)$/);
+        expect(img.label).toBeTruthy();
       });
     });
   });
@@ -147,6 +148,5 @@ describe("projects", () => {
     const categories = [...new Set(projects.map((p) => p.category))];
     expect(categories).toContain("Commercial");
     expect(categories).toContain("Residential");
-    expect(categories).toContain("Hospitality");
   });
 });

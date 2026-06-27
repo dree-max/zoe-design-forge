@@ -12,6 +12,11 @@ export const navItems: NavItem[] = [
   { label: "Contact", href: "/contact" },
 ];
 
+export interface ProjectImage {
+  src: string;
+  label: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -20,7 +25,7 @@ export interface Project {
   year: string;
   scope: string;
   description: string;
-  images: string[];
+  images: ProjectImage[];
   team?: string;
   timeline?: string;
 }
@@ -162,103 +167,86 @@ export const team: TeamMember[] = [
 
 export const projects: Project[] = [
   {
-    id: "kmt-plaza",
-    title: "KMT Plaza",
+    id: "kmt-plaza-nansana",
+    title: "KMT Plaza Nansana",
     category: "Commercial",
-    location: "Kampala, Uganda",
+    location: "Nansana, Uganda",
     year: "2025",
     scope: "Architectural Design, Interior Design, Project Management",
-    description: "A 12-storey mixed-use commercial tower featuring premium office spaces, retail outlets, and a rooftop restaurant. The design emphasizes natural ventilation, daylight optimization, and a striking facade that has become a landmark on Kampala's skyline.",
-    images: ["/images/projects/kmt-plaza-1.jpg", "/images/projects/kmt-plaza-2.jpg"],
+    description:
+      "A multi-storey mixed-use commercial development featuring premium retail spaces, modern glass facades, and landmark branding. Designed for high visibility along Nansana's growing commercial corridor.",
+    images: [
+      { src: "/images/projects/kmt-plaza-nansana-day.png", label: "KMT Plaza Nansana — Day View" },
+      { src: "/images/projects/kmt-plaza-nansana-night.png", label: "KMT Plaza Nansana — Night View" },
+    ],
   },
   {
-    id: "otra-vida-hotel",
-    title: "Otra Vida Hotel",
-    category: "Hospitality",
-    location: "Entebbe, Uganda",
-    year: "2024",
-    scope: "Full Architectural Design, Interior Design, Landscape Design",
-    description: "A boutique lakeside hotel with 24 rooms, a spa, infinity pool, and waterfront dining. Every detail was crafted to create a seamless indoor-outdoor experience, taking full advantage of the Lake Victoria vista.",
-    images: ["/images/projects/otra-vida-1.jpg", "/images/projects/otra-vida-2.jpg"],
-  },
-  {
-    id: "grace-residence",
-    title: "Grace Luxury Residence",
+    id: "kyankwazi-country-home",
+    title: "Kyankwazi Country Home",
     category: "Residential",
-    location: "Kololo, Kampala",
+    location: "Kyankwazi, Uganda",
+    year: "2024",
+    scope: "Architectural Design, Interior Design, Landscape Design",
+    description:
+      "An elegant country residence with classical arched balconies, a gated entrance, and expansive landscaped grounds. The design balances formal architecture with comfortable family living.",
+    images: [
+      { src: "/images/projects/kyankwazi-country-home-day.png", label: "Kyankwazi Country Home — Day View" },
+      { src: "/images/projects/kyankwazi-country-home-dusk.png", label: "Kyankwazi Country Home — Dusk View" },
+      { src: "/images/projects/kyankwazi-country-home-aerial.png", label: "Kyankwazi Country Home — Aerial View" },
+    ],
+  },
+  {
+    id: "residential-wakiso-buyera",
+    title: "Residential Wakiso Buyera",
+    category: "Residential",
+    location: "Buyera, Wakiso",
+    year: "2024",
+    scope: "Architectural Design, Landscape Design",
+    description:
+      "A contemporary multi-level residence built into terraced stone landscaping, with warm brick and stone finishes, outdoor lighting, and integrated parking — designed for hillside terrain.",
+    images: [
+      { src: "/images/projects/residential-wakiso-buyera.png", label: "Residential Wakiso Buyera — Exterior View" },
+    ],
+  },
+  {
+    id: "apartments-garuga-entebbe",
+    title: "Apartments Garuga Entebbe",
+    category: "Residential",
+    location: "Garuga, Entebbe",
     year: "2025",
-    scope: "Architectural Design, Interior Design, Custom Furniture",
-    description: "A 6-bedroom luxury home featuring an open-plan layout, private courtyard pool, and a rooftop terrace. The design seamlessly integrates modern aesthetics with local materials and craftsmanship.",
-    images: ["/images/projects/grace-res-1.jpg", "/images/projects/grace-res-2.jpg"],
+    scope: "Architectural Design, Interior Design",
+    description:
+      "A modern multi-unit apartment block with glass balconies, decorative screening, and premium exterior lighting. Designed for comfortable urban living near Entebbe.",
+    images: [
+      { src: "/images/projects/apartments-garuga-entebbe-day.png", label: "Apartments Garuga Entebbe — Day View" },
+      { src: "/images/projects/apartments-garuga-entebbe-night.png", label: "Apartments Garuga Entebbe — Night View" },
+    ],
   },
   {
-    id: "bugolobi-offices",
-    title: "Bugolobi Business Centre",
-    category: "Commercial",
-    location: "Bugolobi, Kampala",
-    year: "2024",
-    scope: "Architectural Design, Project Management",
-    description: "Grade-A office space designed for the modern professional. Features include flexible floor plates, green building principles, and integrated smart building technology.",
-    images: ["/images/projects/bugolobi-1.jpg", "/images/projects/bugolobi-2.jpg"],
-  },
-  {
-    id: "munyonyo-villa",
-    title: "Munyonyo Lake View Villa",
+    id: "residential-entebbe-akright",
+    title: "Residential Entebbe Akright",
     category: "Residential",
-    location: "Munyonyo, Kampala",
-    year: "2023",
-    scope: "Full Architectural Design, Interior Design, Landscape Design",
-    description: "A Mediterranean-inspired lakeside villa with 5 bedrooms, private beach access, and panoramic views of Lake Victoria. The design emphasizes indoor-outdoor living and natural stone finishes.",
-    images: ["/images/projects/munyonyo-1.jpg", "/images/projects/munyonyo-2.jpg"],
-  },
-  {
-    id: "nakasero-penthouse",
-    title: "Nakasero Penthouse",
-    category: "Residential",
-    location: "Nakasero, Kampala",
+    location: "Akright, Entebbe",
     year: "2024",
-    scope: "Interior Design, Custom Furniture",
-    description: "A top-floor penthouse transformation featuring custom millwork, curated art pieces, and a breathtaking city-view terrace. Every piece of furniture was custom-designed for the space.",
-    images: ["/images/projects/nakasero-1.jpg", "/images/projects/nakasero-2.jpg"],
+    scope: "Architectural Design, Interior Design, Landscape Design",
+    description:
+      "A luxury two-storey residence with terracotta roofing, stone accents, columned porticos, and manicured gardens — crafted for upscale living in the Akright estate.",
+    images: [
+      { src: "/images/projects/residential-entebbe-akright-day.png", label: "Residential Entebbe Akright — Day View" },
+      { src: "/images/projects/residential-entebbe-akright-dusk.png", label: "Residential Entebbe Akright — Dusk View" },
+    ],
   },
   {
-    id: "jinja-resort",
-    title: "Jinja Eco-Lodge Resort",
-    category: "Hospitality",
-    location: "Jinja, Uganda",
-    year: "2023",
-    scope: "Architectural Design, Master Planning, Landscape Design",
-    description: "An eco-luxury resort on the banks of the Nile. 16 sustainably-built villas with thatched roofs, solar power, and rainwater harvesting. The master plan preserves 80% of the natural landscape.",
-    images: ["/images/projects/jinja-1.jpg", "/images/projects/jinja-2.jpg"],
-  },
-  {
-    id: "acacia-mall",
-    title: "Acacia Mall Extension",
-    category: "Commercial",
-    location: "Kampala, Uganda",
-    year: "2023",
-    scope: "Architectural Design, Project Management",
-    description: "A 5-storey retail and entertainment extension to one of Kampala's premier shopping destinations. Features a food court, cinema complex, and rooftop event space.",
-    images: ["/images/projects/acacia-1.jpg", "/images/projects/acacia-2.jpg"],
-  },
-  {
-    id: "kigo-estate",
-    title: "Kigo Executive Estate",
+    id: "wakiso-gardens",
+    title: "Wakiso Gardens",
     category: "Residential",
-    location: "Kigo, Kampala",
-    year: "2025",
-    scope: "Master Planning, Architectural Design",
-    description: "A 20-acre gated community featuring 40 executive homes, community clubhouse, swimming pool, and landscaped gardens. Each home is individually designed while maintaining cohesive estate aesthetics.",
-    images: ["/images/projects/kigo-1.jpg", "/images/projects/kigo-2.jpg"],
-  },
-  {
-    id: "garden-city-furniture",
-    title: "Garden City Restaurant Collection",
-    category: "Furniture",
-    location: "Kampala, Uganda",
-    year: "2024",
-    scope: "Custom Furniture Design & Fabrication",
-    description: "A complete furniture collection for a multi-restaurant food court. Over 200 custom pieces including dining tables, lounge seating, bar counters, and decorative screens — each designed for its specific venue.",
-    images: ["/images/projects/garden-city-1.jpg", "/images/projects/garden-city-2.jpg"],
+    location: "Wakiso, Uganda",
+    year: "2023",
+    scope: "Landscape Design, Master Planning",
+    description:
+      "A landscaped garden and fountain feature with tiered stonework, colourful planting beds, and paved walkways — creating a welcoming outdoor environment for a residential community.",
+    images: [
+      { src: "/images/projects/wakiso-gardens.png", label: "Wakiso Gardens — Landscape View" },
+    ],
   },
 ];
