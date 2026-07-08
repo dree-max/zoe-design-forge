@@ -1,0 +1,48 @@
+npm warn using --force Recommended protections disabled.
+npm warn audit Updating next to 9.3.3, which is a SemVer major change.
+npm warn audit Updating sanity to 5.14.1, which is a SemVer major change.
+npm warn audit Updating next-sanity to 9.5.6, which is a SemVer major change.
+npm warn audit Updating @sanity/vision to 6.4.0, which is a SemVer major change.
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: zoe-design-forge@1.0.0
+npm warn Found: sanity@6.4.0
+npm warn node_modules/sanity
+npm warn   sanity@"5.14.1" from the root project
+npm warn   1 more (@sanity/vision)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer sanity@"^6.0.0-0" from @sanity/vision@6.4.0
+npm warn node_modules/@sanity/vision
+npm warn   @sanity/vision@"6.4.0" from the root project
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: zoe-design-forge@1.0.0
+npm warn Found: sanity@6.4.0
+npm warn node_modules/sanity
+npm warn   sanity@"5.14.1" from the root project
+npm warn   1 more (@sanity/vision)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer sanity@"^3.57.4" from next-sanity@9.5.6
+npm warn node_modules/next-sanity
+npm warn   next-sanity@"9.5.6" from the root project
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: next@9.3.3
+npm warn Found: react@19.2.7
+npm warn node_modules/react
+npm warn   peer react@">=16.8.0" from @floating-ui/react-dom@2.1.8
+npm warn   node_modules/@floating-ui/react-dom
+npm warn     @floating-ui/react-dom@"^2.1.6" from @sanity/ui@3.2.0
+npm warn     node_modules/@sanity/insert-menu/node_modules/@sanity/ui
+npm warn     3 more (@sanity/ui, @sanity/ui, @sanity/ui)
+npm warn   39 more (@mux/mux-player-react, @portabletext/react, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer react@"^16.6.0" from next@9.3.3
+npm warn node_modules/next
+npm warn   next@"9.3.3" from the root project
+npm warn
+npm warn Conflicting peer dependency: react@16.14.0
+npm warn node_modules/react
+npm warn   peer react@"^16.6.0" from next@9.3.3
+npm warn   node_modules/next
+npm warn     next@"9.3.3" from the root project
