@@ -13,7 +13,9 @@
       "Bash(npm i:*)",
       "Bash(npm audit:*)",
       "Bash(del /s /q node_modules)",
-      "Bash(powershell.exe -Command \"Remove-Item -Recurse -Force node_modules\")"
+      "Bash(powershell.exe -Command \"Remove-Item -Recurse -Force node_modules\")",
+      "Bash(npm run build:*)",
+      "Bash(git push:*)"
     ]
   }
 }
