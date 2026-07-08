@@ -15,7 +15,8 @@
       "Bash(del /s /q node_modules)",
       "Bash(powershell.exe -Command \"Remove-Item -Recurse -Force node_modules\")",
       "Bash(npm run build:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git rm:*)"
     ]
   }
 }
