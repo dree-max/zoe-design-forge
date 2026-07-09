@@ -18,5 +18,10 @@
       "Bash(git push:*)",
       "Bash(git rm:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "n8n",
+    "obsidian"
+  ],
+  "enableAllProjectMcpServers": true
 }
